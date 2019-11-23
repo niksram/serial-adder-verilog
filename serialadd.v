@@ -11,7 +11,7 @@ module ser_add(input wire clk,reset,mode, input wire[15:0] in1,in2, output wire 
 
 	mux15 m1(sh1,in1,mode,mx1);
 	mux15 m2(sh2,in2,mode,mx2);
-	mux2 mcin(mode,regcout,mode,cin);
+	mux2 mcin(regcout,1'b0,mode,cin);
 
 
 	fadd fa(s1,s2,cin,sum,cout);

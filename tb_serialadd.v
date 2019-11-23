@@ -7,42 +7,47 @@ module tb;
         $dumpfile("dump.vcd");
         $dumpvars(0,tb);
     end
-    initial clk = 1'b0; always #5 clk =~ clk;
+    initial clk = 1'b0; always #3 clk =~ clk;
     initial begin
 		$monitor(t_a,t_b,mode,sum);
     mode=1'b1;
     reset=1'b0;
-    t_a=16'b1000100010001000;
+    t_a=16'b0000110010101001;
     t_b=16'b0001000100010001;
-    #5
+    #6
+    mode=1'b1;
+    reset=1'b0;
+    t_a=16'b0000110010101001;
+    t_b=16'b0001000100010001;
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
-    #5
+    #6
     mode=1'b0;
 end
 endmodule
