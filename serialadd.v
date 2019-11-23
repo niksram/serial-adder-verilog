@@ -1,7 +1,7 @@
 module ser_add(input wire clk,reset,mode, input wire[15:0] in1,in2, output wire sum);
-	wire[15:0] reg1in,reg1out,reg2in,reg2out,sh1,sh2,mx1,mx2;
+	//mode must be 1 to parallel insert initially, then it must be made zero for the next subsequent bits.
+	wire[15:0] reg1out,reg2out,sh1,sh2,mx1,mx2;
 	wire regcout;
-	wire cout;
 	wire s1,s2,cin,cout;
 
 
@@ -58,7 +58,7 @@ module mux15(input wire[15:0] in1, in2,input wire sel, output wire[15:0] out);
 	mux2 m15(in1[15],in2[15],sel,out[15]);
 endmodule
 
-module rshift(input wire[15:0] in, output wire[15:0] out, shft);
+module rshift(input wire[15:0] in, output wire[15:0] out, output wire shft);
 	assign shft=in[0];
 	assign out[0]=in[1];
 	assign out[1]=in[2];

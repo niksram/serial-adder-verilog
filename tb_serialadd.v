@@ -1,46 +1,48 @@
 module tb;
-    reg t_a,t_b;
-    reg cin,clk,reset;
-    wire t_sum,t_carry;
-    serial_add sa(cin,t_a,t_b,t_sum,t_carry);
+    reg[15:0] t_a,t_b;
+    reg mode,clk,reset;
+    wire sum;
+    ser_add sa(clk,reset,mode,t_a,t_b,sum);
     initial begin
-        $dumpfile("joke.vcd");
+        $dumpfile("dump.vcd");
         $dumpvars(0,tb);
     end
     initial clk = 1'b0; always #5 clk =~ clk;
-    initial reset = 1'b1; always #5 reset=1'b0;
-    initial cin = 1'b0; always #5 cin=1'b0;
     initial begin
-        $monitor(t_a,t_b,t_carry,t_sum);
-    t_a=1'b0;
-    t_b=1'b1;
+		$monitor(t_a,t_b,mode,sum);
+    mode=1'b1;
+    reset=1'b0;
+    t_a=16'b1000100010001000;
+    t_b=16'b0001000100010001;
     #5
-    t_a=1'b0;
-    t_b=1'b1;
+    mode=1'b0;
     #5
-    t_a=1'b0;
-    t_b=1'b1;
+    mode=1'b0;
     #5
-    t_a=1'b0;
-    t_b=1'b1;
+    mode=1'b0;
     #5
-    t_a=1'b0;
-    t_b=1'b1; 
+    mode=1'b0;
     #5
-    t_a=1'b0;
-    t_b=1'b1;
+    mode=1'b0;
     #5
-    t_a=1'b0;
-    t_b=1'b1;
+    mode=1'b0;
     #5
-    #5 
+    mode=1'b0;
     #5
+    mode=1'b0;
     #5
+    mode=1'b0;
     #5
-    #5   
+    mode=1'b0;
     #5
+    mode=1'b0;
     #5
-    #5 
+    mode=1'b0;
     #5
-    end
+    mode=1'b0;
+    #5
+    mode=1'b0;
+    #5
+    mode=1'b0;
+end
 endmodule
