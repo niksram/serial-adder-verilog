@@ -49,5 +49,5 @@ module tb;
     mode=1'b0;
     #6
     mode=1'b0;
-end
+  end
 endmodule

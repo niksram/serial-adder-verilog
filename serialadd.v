@@ -1,12 +1,18 @@
 module ser_add(input wire clk,reset,mode, input wire[15:0] in1,in2, output wire sum);
 	//mode must be 1 to parallel insert initially, then it must be made zero for the next subsequent bits.
+	// To run the file
+	// iverilog -o final lib.v serialadd.v tb_serialadd.v
+	// vvp final
+	// Then press ctrl + C and type "finish" in the prompt
+	// gtkwave dump.vcd
+
 	wire[15:0] reg1out,reg2out,sh1,sh2,mx1,mx2;
 	wire regcout;
 	wire s1,s2,cin,cout;
 
 
-	rshift r1(reg1out,sh1,s1);
-	rshift r2(reg2out,sh2,s2);
+	rshift r1(reg1out,1'b0,sum,sh1,s1);
+	rshift r2(reg2out,1'b1,sum,sh2,s2);
 
 
 	mux15 m1(sh1,in1,mode,mx1);
@@ -58,7 +64,7 @@ module mux15(input wire[15:0] in1, in2,input wire sel, output wire[15:0] out);
 	mux2 m15(in1[15],in2[15],sel,out[15]);
 endmodule
 
-module rshift(input wire[15:0] in, output wire[15:0] out, output wire shft);
+module rshift(input wire[15:0] in, input wire sel, sum, output wire[15:0] out, output wire shft);
 	assign shft=in[0];
 	assign out[0]=in[1];
 	assign out[1]=in[2];
@@ -75,7 +81,14 @@ module rshift(input wire[15:0] in, output wire[15:0] out, output wire shft);
 	assign out[12]=in[13];
 	assign out[13]=in[14];
 	assign out[14]=in[15];
-	assign out[15]=in[15];
+	
+	wire feedback;
+	// Sum is to write back into the first register
+	// Select is depends on whether the input to rshift
+	// is the first or second shift register(A or B)
+	mux2 m2(sum, in[0], sel, feedback);
+
+	assign out[15]=feedback;
 endmodule
 
 module fadd(input wire a, b, cin, output wire sum, cout);
