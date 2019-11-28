@@ -1,28 +1,30 @@
-module ser_add(input wire clk,reset,mode, input wire[15:0] in1,in2, output wire sum);
-	//mode must be 1 to parallel insert initially, then it must be made zero for the next subsequent bits.
+module ser_add(input wire clk,reset,useTestBenchInputs, input wire[15:0] input1,input2, output wire sum);
+	//
+	
+	// useTestBenchInputs must be 1 to parallel insert initially, then it must be made zero for the next subsequent bits.
 	// To run the file
 	// iverilog -o final lib.v serialadd.v tb_serialadd.v
 	// vvp final
 	// Then press ctrl + C and type "finish" in the prompt
 	// gtkwave dump.vcd
 
-	wire[15:0] reg1out,reg2out,sh1,sh2,mx1,mx2;
+	wire[15:0] registerA,registerB,shiftedRegA,shiftedRegB,regForInputA,regForInputB;
 	wire regcout;
-	wire s1,s2,cin,cout;
+	wire lsbFromA,lsbFromB,carryIn,cout;
 
 
-	rshift r1(reg1out,1'b0,sum,sh1,s1);
-	rshift r2(reg2out,1'b1,sum,sh2,s2);
+	rshift r1(registerA,1'b0,sum,shiftedRegA,lsbFromA);
+	rshift r2(registerB,1'b1,sum,shiftedRegB,lsbFromB);
 
 
-	mux15 m1(sh1,in1,mode,mx1);
-	mux15 m2(sh2,in2,mode,mx2);
-	mux2 mcin(regcout,1'b0,mode,cin);
+	mux15 m1(shiftedRegA,input1,useTestBenchInputs,regForInputA);
+	mux15 m2(shiftedRegB,input2,useTestBenchInputs,regForInputB);
+	mux2 mcarryIn(regcout,1'b0,useTestBenchInputs,carryIn);
 
 
-	fadd fa(s1,s2,cin,sum,cout);
-	register reg1(clk,reset,mx1,reg1out);
-	register reg2(clk,reset,mx2,reg2out);
+	fadd fa(lsbFromA,lsbFromB,carryIn,sum,cout);
+	register reg1(clk,reset,regForInputA,registerA);
+	register reg2(clk,reset,regForInputB,registerB);
 	dfrl c(clk,reset,1'b1,cout,regcout);
 endmodule
 
@@ -45,26 +47,26 @@ module register(input wire clk,reset, input wire [15:0] in, output wire [15:0] o
 	dfrl df15(clk,reset,1'b1,in[15],out[15]);
 endmodule
 
-module mux15(input wire[15:0] in1, in2,input wire sel, output wire[15:0] out);
-	mux2 m0(in1[0],in2[0],sel,out[0]);
-	mux2 m1(in1[1],in2[1],sel,out[1]);
-	mux2 m2(in1[2],in2[2],sel,out[2]);
-	mux2 m3(in1[3],in2[3],sel,out[3]);
-	mux2 m4(in1[4],in2[4],sel,out[4]);
-	mux2 m5(in1[5],in2[5],sel,out[5]);
-	mux2 m6(in1[6],in2[6],sel,out[6]);
-	mux2 m7(in1[7],in2[7],sel,out[7]);
-	mux2 m8(in1[8],in2[8],sel,out[8]);
-	mux2 m9(in1[9],in2[9],sel,out[9]);
-	mux2 m10(in1[10],in2[10],sel,out[10]);
-	mux2 m11(in1[11],in2[11],sel,out[11]);
-	mux2 m12(in1[12],in2[12],sel,out[12]);
-	mux2 m13(in1[13],in2[13],sel,out[13]);
-	mux2 m14(in1[14],in2[14],sel,out[14]);
-	mux2 m15(in1[15],in2[15],sel,out[15]);
+module mux15(input wire[15:0] shiftedReg, initialInput,input wire useInitialInput, output wire[15:0] inputToMem);
+	mux2 m0(shiftedReg[0],initialInput[0],useInitialInput,inputToMem[0]);
+	mux2 m1(shiftedReg[1],initialInput[1],useInitialInput,inputToMem[1]);
+	mux2 m2(shiftedReg[2],initialInput[2],useInitialInput,inputToMem[2]);
+	mux2 m3(shiftedReg[3],initialInput[3],useInitialInput,inputToMem[3]);
+	mux2 m4(shiftedReg[4],initialInput[4],useInitialInput,inputToMem[4]);
+	mux2 m5(shiftedReg[5],initialInput[5],useInitialInput,inputToMem[5]);
+	mux2 m6(shiftedReg[6],initialInput[6],useInitialInput,inputToMem[6]);
+	mux2 m7(shiftedReg[7],initialInput[7],useInitialInput,inputToMem[7]);
+	mux2 m8(shiftedReg[8],initialInput[8],useInitialInput,inputToMem[8]);
+	mux2 m9(shiftedReg[9],initialInput[9],useInitialInput,inputToMem[9]);
+	mux2 m10(shiftedReg[10],initialInput[10],useInitialInput,inputToMem[10]);
+	mux2 m11(shiftedReg[11],initialInput[11],useInitialInput,inputToMem[11]);
+	mux2 m12(shiftedReg[12],initialInput[12],useInitialInput,inputToMem[12]);
+	mux2 m13(shiftedReg[13],initialInput[13],useInitialInput,inputToMem[13]);
+	mux2 m14(shiftedReg[14],initialInput[14],useInitialInput,inputToMem[14]);
+	mux2 m15(shiftedReg[15],initialInput[15],useInitialInput,inputToMem[15]);
 endmodule
 
-module rshift(input wire[15:0] in, input wire sel, sum, output wire[15:0] out, output wire shft);
+module rshift(input wire[15:0] in, input wire selectLsb, sum, output wire[15:0] out, output wire shft);
 	assign shft=in[0];
 	assign out[0]=in[1];
 	assign out[1]=in[2];
@@ -82,13 +84,13 @@ module rshift(input wire[15:0] in, input wire sel, sum, output wire[15:0] out, o
 	assign out[13]=in[14];
 	assign out[14]=in[15];
 	
-	wire feedback;
+	// wire feedback;
 	// Sum is to write back into the first register
 	// Select is depends on whether the input to rshift
 	// is the first or second shift register(A or B)
-	mux2 m2(sum, in[0], sel, feedback);
+	mux2 m2(sum, in[0], selectLsb, out[15]);
 
-	assign out[15]=feedback;
+	// assign out[15]=feedback;
 endmodule
 
 module fadd(input wire a, b, cin, output wire sum, cout);

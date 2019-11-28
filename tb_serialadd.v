@@ -49,5 +49,10 @@ module tb;
     mode=1'b0;
     #6
     mode=1'b0;
+    #6
+    mode=1'b1;
+    reset=1'b1;
+    t_a=16'b0000000000000000;
+    t_b=16'b0000000000000000;
   end
 endmodule
